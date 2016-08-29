@@ -38,15 +38,16 @@ app.get('/todos', function(req, res) {
 
 app.get('/todos/:id', function(req, res) {
 	var todoId = parseInt(req.params.id, 10);
-	var matchedTodo = _.findWhere(todos, {
-		id: todoId
-	});
-
-	if (matchedTodo) {
-		res.send(matchedTodo);
-	} else {
-		res.status(404).send();
-	}
+	db.todo.findById(todoId).then(function(todo) {
+		if (todo != null) {
+			res.send(todo.toJSON());
+		} else {
+			res.status(404).send();
+		}
+	}, function(e) {
+		console.log(e);
+		res.status(500).send();
+	})
 });
 
 app.delete('/todos/:id', function(req, res) {
